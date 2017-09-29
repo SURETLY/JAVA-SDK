@@ -9,7 +9,7 @@ import model.order.Order;
 import model.order.OrderStatus;
 import model.respons.Response;
 import network.LenderClient;
-import network.SessionManager;
+import network.Session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +22,21 @@ public class Suretly {
         return api;
     }
 
+    private LenderClient lenderClient;
+
     public void init(String id, String token) {
-        SessionManager.setId(id);
-        SessionManager.setToken(token);
+        lenderClient = new LenderClient(new Session(id, token));
     }
 
 
     public Single<Options> getOption() {
-        return LenderClient.getApi().getOptions()
+        return lenderClient.getApi().getOptions()
                 .map(jsonElement -> Options.fromJson(jsonElement.getAsJsonObject())
                 );
     }
 
     public Single<List<Order>> getOrders(long from, long to, int limit, int skip) {
-        return LenderClient.getApi().getOrders(from, to, limit, skip)
+        return lenderClient.getApi().getOrders(from, to, limit, skip)
                 .map(jsonElement -> {
                     List<Order> orders = new ArrayList<>();
                     JsonArray jsonArray = jsonElement.getAsJsonObject().getAsJsonArray("list");
@@ -48,7 +49,7 @@ public class Suretly {
     }
 
     public Single<Response> createOrder(String uid, boolean isPublic, Borrower borrower, int user_credit_score, float loan_sum, float loan_rate, float loan_term, String currency_code, String server_id) {
-        return LenderClient.getApi().createOrder(uid, isPublic, borrower, user_credit_score, loan_sum, loan_rate, loan_term, currency_code, server_id)
+        return lenderClient.getApi().createOrder(uid, isPublic, borrower, user_credit_score, loan_sum, loan_rate, loan_term, currency_code, server_id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
@@ -56,42 +57,42 @@ public class Suretly {
      * "59cb5c49cea09911939d7f2b"
      */
     public Single<OrderStatus> getOrderStatus(String id) {
-        return LenderClient.getApi().getOrderStatus(id)
+        return lenderClient.getApi().getOrderStatus(id)
                 .map(jsonElement -> OrderStatus.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Response> stopOrder(String id) {
-        return LenderClient.getApi().stopOrder(id)
+        return lenderClient.getApi().stopOrder(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Contract> getContract(String id) {
-        return LenderClient.getApi().getContract(id)
+        return lenderClient.getApi().getContract(id)
                 .map(jsonElement -> Contract.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Response> setAccept(String id) {
-        return LenderClient.getApi().setAccept(id)
+        return lenderClient.getApi().setAccept(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Response> setOrderIssued(String id) {
-        return LenderClient.getApi().setOrderIssued(id)
+        return lenderClient.getApi().setOrderIssued(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Response> setOrderPaid(String id) {
-        return LenderClient.getApi().setOrderPaid(id)
+        return lenderClient.getApi().setOrderPaid(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Response> setOrderParialPaid(String id, int sum) {
-        return LenderClient.getApi().setOrderPartialpaid(id, sum)
+        return lenderClient.getApi().setOrderPartialpaid(id, sum)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
     public Single<Response> setOrderUnPaid(String id) {
-        return LenderClient.getApi().setOrderUnPaid(id)
+        return lenderClient.getApi().setOrderUnPaid(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 }
