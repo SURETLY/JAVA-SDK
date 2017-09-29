@@ -23,8 +23,8 @@ public class Suretly {
     }
 
     public void init(String id, String token) {
-        SessionManager.setId("59ca108acea0997574cef789");
-        SessionManager.setToken("123qweasd");
+        SessionManager.setId(id);
+        SessionManager.setToken(token);
     }
 
 

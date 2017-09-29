@@ -16,8 +16,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        SessionManager.setId("59ce0aa9cea0991f9327cdf3");
-        SessionManager.setToken("321dsaeqw");
+        Suretly suretly = new Suretly();
+        suretly.init("59ca108acea0997574cef789", "123qweasd");
 
         LenderClient.getApi().getOptions()
                 .subscribe(jsonElement ->
@@ -65,9 +65,9 @@ public class Main {
 //                    }
 //                });
 
-        LenderClient.getApi().getContract("59ce0ac8cea0991f9327cdf6")
-                .subscribe(jsonElement ->
-                        Build.log(Main.class.getSimpleName(), jsonElement.toString()));
+//        LenderClient.getApi().getContract("59ce0ac8cea0991f9327cdf6")
+//                .subscribe(jsonElement ->
+//                        Build.log(Main.class.getSimpleName(), jsonElement.toString()));
 
 //        LenderClient.getApi().setAccept("59cb5c49cea09911939d7f2b")
 //                .subscribe(jsonElement ->
