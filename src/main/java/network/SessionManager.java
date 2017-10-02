@@ -4,28 +4,25 @@ import com.oracle.tools.packager.Log;
 
 public class SessionManager {
 
-    private static String iId;
-    private static String tToken;
-    private static String randomId = Utils.makeId(8);
+    private String id;
+    private String token;
+    private String randomId = Utils.makeId(8);
 
     public String getId() {
-        return iId;
+        return id;
     }
 
-    public static void setId(String id) {
-        iId = id;
+    public SessionManager(String id, String token) {
+        this.id = id;
+        this.token = token;
     }
 
-    public static String getToken() {
-        return tToken;
+    public String getToken() {
+        return token;
     }
 
-    public static void setToken(String token) {
-        tToken = token;
-    }
-
-    public static String getVerify() {
-        String verify = iId + "-" + randomId + "-" + Utils.md5Custom(randomId + tToken);
+    public String getVerify() {
+        String verify = id + "-" + randomId + "-" + Utils.md5Custom(randomId + token);
         Log.info("verify=" + verify);
         return verify;
     }

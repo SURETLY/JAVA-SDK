@@ -1,11 +1,7 @@
-import io.reactivex.Single;
-import io.reactivex.functions.Consumer;
 import model.borrower.*;
 import model.options.Options;
-import model.order.Order;
 import model.order.OrderStatus;
 import model.respons.Response;
-import network.SessionManager;
 import org.junit.After;
 import org.junit.Test;
 
@@ -19,16 +15,15 @@ public class SuretlyTest {
 
     @Test
     public void init() throws Exception {
-        Suretly.get().init("123", "123");
+        Suretly suretly = new Suretly();
+        suretly.init("123", "123");
     }
 
     @Test
     public void getOption() throws Exception {
-        SessionManager.setId("59ca108acea0997574cef789");
-        SessionManager.setToken("123qweasd");
         Suretly suretly = new Suretly();
         suretly.init("59ca108acea0997574cef789", "123qweasd");
-        Options optionsTest = Suretly.get().getOption().blockingGet();
+        Options optionsTest = suretly.getOption().blockingGet();
         assertEquals(optionsTest.getMax_sum(), 1);
         assertEquals(optionsTest.getMax_term(), 1);
         assertEquals(optionsTest.getMin_sum(), 1);
@@ -55,6 +50,14 @@ public class SuretlyTest {
 
         assertEquals(response.getCode(), 200);
         assertEquals(response.getMsg(), "order added");
+    }
+
+    @Test
+    public void getShouldReturnValidInstance() throws Exception {
+        Suretly suretly = Suretly.get();
+        Suretly suretly2 = Suretly.get();
+
+        assertEquals(suretly, suretly2);
     }
 
     @Test

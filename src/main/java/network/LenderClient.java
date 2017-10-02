@@ -9,15 +9,20 @@ import javax.net.ssl.*;
 
 public class LenderClient {
 
-    private static IServerApi API;
+    private IServerApi API;
+    private SessionManager sessionManager;
 
-    public static IServerApi getApi() {
+    public LenderClient(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+
+    public IServerApi getApi() {
+        if (sessionManager == null) throw new IllegalStateException("You should init api first!");
         if (API == null) setupRestClient();
         return API;
     }
 
-    private static void setupRestClient() {
-
+    private void setupRestClient() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Config.BASE_URL)
                 .client(getUnsafeOkHttpClient())
@@ -27,7 +32,7 @@ public class LenderClient {
         API = retrofit.create(IServerApi.class);
     }
 
-    public static OkHttpClient getUnsafeOkHttpClient() {
+    private OkHttpClient getUnsafeOkHttpClient() {
 
         try {
             // Create a trust manager that does not validate certificate chains
@@ -61,7 +66,7 @@ public class LenderClient {
             OkHttpClient okHttpClient = new OkHttpClient();
             okHttpClient = okHttpClient.newBuilder()
                     .sslSocketFactory(sslSocketFactory)
-                    .addInterceptor(new HttpInterceptor())
+                    .addInterceptor(new HttpInterceptor(sessionManager))
                     .hostnameVerifier((s, sslSession) -> true).build();
 
             return okHttpClient;

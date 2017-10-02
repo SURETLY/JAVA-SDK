@@ -1,7 +1,6 @@
 package network;
 
 import com.google.gson.JsonElement;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import model.borrower.Borrower;
 import retrofit2.http.*;
@@ -62,8 +61,8 @@ public interface IServerApi {
     /**
      * Получить контракт для заемщика
      */
-    @GET("contract/get/")
-    Single<JsonElement> getContract(@Query("id") String id);
+    @GET("contract/get")
+    Single<String> getContract(@Query("id") String id);
 
     /**
      * Подтвердить что договор по заявке подписан заемщиком
