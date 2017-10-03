@@ -11,12 +11,14 @@ import model.respons.ResponseCreateOrder;
 import network.Build;
 
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class Bot {
 
-    public static void main(String[] args) {
 
+    public static void main(String[] args) {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         Suretly suretly = new Suretly();
         suretly.init("59d1c3efcea0993b18c2b042", "qweasd123");
 
@@ -73,10 +75,9 @@ public class Bot {
                         .flatMap((Function<ResponseCreateOrder, SingleSource<Response>>) responseCreateOrder -> suretly.setOrderIssued(responseCreateOrder.getId())))
                 .flatMap((Function<Response, Single<Response>>) response -> responseCreateOrderSingle
                         .flatMap((Function<ResponseCreateOrder, Single<Response>>) responseCreateOrder -> suretly.setOrderPaid(responseCreateOrder.getId())))
-                .subscribe(response -> Build.log("tag", response.toString()));
-
+                .subscribe(response -> countDownLatch.countDown());
         try {
-            Thread.sleep(50000);
+            countDownLatch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
