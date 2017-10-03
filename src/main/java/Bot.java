@@ -1,13 +1,7 @@
-import com.sun.tools.javac.comp.Flow;
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import io.reactivex.functions.BooleanSupplier;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.reactivex.subjects.PublishSubject;
 import javafx.util.Pair;
 import model.borrower.*;
 import model.contract.Contract;
@@ -15,20 +9,15 @@ import model.order.OrderStatus;
 import model.respons.Response;
 import model.respons.ResponseCreateOrder;
 import network.Build;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import sun.rmi.runtime.Log;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Bot {
 
-    private static Suretly suretly;
-
     public static void main(String[] args) {
 
-        suretly = new Suretly();
+        Suretly suretly = new Suretly();
         suretly.init("59d1c3efcea0993b18c2b042", "qweasd123");
 
         suretly.getOption()
@@ -61,50 +50,27 @@ public class Bot {
                         throw new RuntimeException("Stop order");
                     } else {
                         Single<Boolean> checkStatus = responseCreateOrderSingle
-                                .flatMap(new Function<ResponseCreateOrder, SingleSource<OrderStatus>>() {
-                                    @Override
-                                    public SingleSource<OrderStatus> apply(ResponseCreateOrder responseCreateOrder) throws Exception {
-                                        return suretly.getOrderStatus(responseCreateOrder.getId());
-                                    }
-                                })
-                                .map(new Function<OrderStatus, Boolean>() {
-                                    @Override
-                                    public Boolean apply(OrderStatus orderStatus) throws Exception {
-                                        Build.log("tag", orderStatus.toString());
-                                        if (orderStatus.getStatus() == 4) {
-                                            return true;
-                                        } else if (orderStatus.getStatus() == 3 || orderStatus.getStatus() == 2) {
-                                            throw new RuntimeException("Stop order");
-                                        } else {
-                                            return false;
-                                        }
+                                .flatMap((Function<ResponseCreateOrder, SingleSource<OrderStatus>>) responseCreateOrder -> suretly.getOrderStatus(responseCreateOrder.getId()))
+                                .map(orderStatus -> {
+                                    Build.log("tag", orderStatus.toString());
+                                    if (orderStatus.getStatus() == 4) {
+                                        return true;
+                                    } else if (orderStatus.getStatus() == 3 || orderStatus.getStatus() == 2) {
+                                        throw new RuntimeException("Stop order");
+                                    } else {
+                                        return false;
                                     }
                                 });
                         Single<Long> timer = Single.timer(3, TimeUnit.SECONDS);
                         Single<Boolean> delayedCheck = timer.zipWith(checkStatus, (aLong, status) -> status);
                         return delayedCheck
                                 .repeat()
-                                .takeUntil(new Predicate<Boolean>() {
-                                    @Override
-                                    public boolean test(Boolean aBoolean) throws Exception {
-                                        return aBoolean;
-                                    }
-                                })
+                                .takeUntil((Predicate<Boolean>) aBoolean -> aBoolean)
                                 .last(false);
                     }
                 })
-                .flatMap(new Function<Boolean, SingleSource<Response>>() {
-                    @Override
-                    public SingleSource<Response> apply(Boolean aBoolean) throws Exception {
-                        return responseCreateOrderSingle
-                                .flatMap(new Function<ResponseCreateOrder, SingleSource<Response>>() {
-                                    @Override
-                                    public SingleSource<Response> apply(ResponseCreateOrder responseCreateOrder) throws Exception {
-                                        return suretly.setOrderIssued(responseCreateOrder.getId());
-                                    }
-                                });
-                    }
-                })
+                .flatMap((Function<Boolean, SingleSource<Response>>) aBoolean -> responseCreateOrderSingle
+                        .flatMap((Function<ResponseCreateOrder, SingleSource<Response>>) responseCreateOrder -> suretly.setOrderIssued(responseCreateOrder.getId())))
                 .flatMap((Function<Response, Single<Response>>) response -> responseCreateOrderSingle
                         .flatMap((Function<ResponseCreateOrder, Single<Response>>) responseCreateOrder -> suretly.setOrderPaid(responseCreateOrder.getId())))
                 .subscribe(response -> Build.log("tag", response.toString()));
@@ -128,21 +94,5 @@ public class Bot {
                 return new Pair<>("1", single1);
         }
         return null;
-    }
-
-    private static Single<Boolean> checkStatus(String id) {
-        return suretly.getOrderStatus(id)
-                .map(new Function<OrderStatus, Boolean>() {
-                    @Override
-                    public Boolean apply(OrderStatus orderStatus) throws Exception {
-                        if (orderStatus.getStatus() == 4) {
-                            return true;
-                        } else if (orderStatus.getStatus() == 3 || orderStatus.getStatus() == 2) {
-                            throw new RuntimeException("Stop order");
-                        } else {
-                            return false;
-                        }
-                    }
-                });
     }
 }
