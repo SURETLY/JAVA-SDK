@@ -1,6 +1,8 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.tools.javac.comp.Flow;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import model.borrower.Borrower;
 import model.contract.Contract;
@@ -8,6 +10,7 @@ import model.options.Options;
 import model.order.Order;
 import model.order.OrderStatus;
 import model.respons.Response;
+import model.respons.ResponseCreateOrder;
 import network.LenderClient;
 import network.SessionManager;
 
@@ -28,7 +31,6 @@ public class Suretly {
         lenderClient = new LenderClient(new SessionManager(id, token));
     }
 
-
     public Single<Options> getOption() {
         return lenderClient.getApi().getOptions()
                 .map(jsonElement -> Options.fromJson(jsonElement.getAsJsonObject()));
@@ -47,9 +49,9 @@ public class Suretly {
                 });
     }
 
-    public Single<Response> createOrder(String uid, boolean isPublic, Borrower borrower, int user_credit_score, float loan_sum, float loan_rate, float loan_term, String currency_code, String server_id) {
+    public Single<ResponseCreateOrder> createOrder(String uid, boolean isPublic, Borrower borrower, int user_credit_score, float loan_sum, float loan_rate, float loan_term, String currency_code, String server_id) {
         return lenderClient.getApi().createOrder(uid, isPublic, borrower, user_credit_score, loan_sum, loan_rate, loan_term, currency_code, server_id)
-                .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
+                .map(jsonElement -> ResponseCreateOrder.fromJson(jsonElement.getAsJsonObject()));
     }
 
     /**
@@ -72,8 +74,8 @@ public class Suretly {
                 });
     }
 
-    public Single<Response> setAccept(String id) {
-        return lenderClient.getApi().setAccept(id)
+    public Single<Response> contractAccept(String id) {
+        return lenderClient.getApi().contractAccept(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 

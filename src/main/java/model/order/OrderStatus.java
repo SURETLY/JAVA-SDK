@@ -26,6 +26,10 @@ public class OrderStatus {
         this.stop_time = stop_time;
     }
 
+    public OrderStatus(String id) {
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }
@@ -101,5 +105,20 @@ public class OrderStatus {
         int bids_sum = jsonObject.get("bids_sum").getAsInt();
         long stop_time = jsonObject.get("stop_time").getAsLong();
         return new OrderStatus(id, status, payment_status, isPublic, cost, sum, bids_count, bids_sum, stop_time);
+    }
+
+    @Override
+    public String toString() {
+        return "OrderStatus{" +
+                "id='" + id + '\'' +
+                ", status=" + status +
+                ", payment_status=" + payment_status +
+                ", isPublic=" + isPublic +
+                ", cost=" + cost +
+                ", sum=" + sum +
+                ", bids_count=" + bids_count +
+                ", bids_sum=" + bids_sum +
+                ", stop_time=" + stop_time +
+                '}';
     }
 }

@@ -1,6 +1,7 @@
 package network;
 
 import com.google.gson.JsonElement;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import model.borrower.Borrower;
 import retrofit2.http.*;
@@ -53,9 +54,8 @@ public interface IServerApi {
     /**
      * Отменить заявку
      */
-    @FormUrlEncoded
     @POST("order/stop")
-    Single<JsonElement> stopOrder(@Field("id") String id);
+    Single<JsonElement> stopOrder(@Query("id") String id);
 
 
     /**
@@ -67,37 +67,32 @@ public interface IServerApi {
     /**
      * Подтвердить что договор по заявке подписан заемщиком
      */
-    @FormUrlEncoded
     @POST("contract/accept")
-    Single<JsonElement> setAccept(@Field("id") String id);
+    Single<JsonElement> contractAccept(@Query("id") String id);
 
 
     /**
      * Подтвердить что заявка оплачена и выдана
      */
-    @FormUrlEncoded
     @POST("order/issued")
-    Single<JsonElement> setOrderIssued(@Field("id") String id);
+    Single<JsonElement> setOrderIssued(@Query("id") String id);
 
     /**
      * Отметить займ как выплаченный
      */
-    @FormUrlEncoded
     @POST("order/paid")
-    Single<JsonElement> setOrderPaid(@Field("id") String id);
+    Single<JsonElement> setOrderPaid(@Query("id") String id);
 
     /**
      * Отметить займ как выплаченный частично
      */
-    @FormUrlEncoded
     @POST("order/partialpaid")
-    Single<JsonElement> setOrderPartialpaid(@Field("id") String id,
-                                            @Field("sum") int sum);
+    Single<JsonElement> setOrderPartialpaid(@Query("id") String id,
+                                            @Query("sum") int sum);
 
     /**
      * Отметить займ как просроченный
      */
-    @FormUrlEncoded
     @POST("order/unpaid")
     Single<JsonElement> setOrderUnPaid(@Field("id") String id);
 
