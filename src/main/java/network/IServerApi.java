@@ -38,15 +38,15 @@ public interface IServerApi {
      */
     @FormUrlEncoded
     @POST("order/new")
-    Single<JsonElement> createOrder(@Field("uid") String uid,
-                                    @Field("is_public") boolean isPublic,
-                                    @Field("borrower") Borrower borrower,
-                                    @Field("user_credit_score") int user_credit_score,
-                                    @Field("loan_sum") float loan_sum,
-                                    @Field("loan_rate") float loan_rate,
-                                    @Field("loan_term") float loan_term,
-                                    @Field("currency_code") String currency_code,
-                                    @Field("callback") String server_id);
+    Single<JsonElement> orderNew(@Field("uid") String uid,
+                                 @Field("is_public") boolean isPublic,
+                                 @Field("borrower") Borrower borrower,
+                                 @Field("user_credit_score") int user_credit_score,
+                                 @Field("loan_sum") float loan_sum,
+                                 @Field("loan_rate") float loan_rate,
+                                 @Field("loan_term") float loan_term,
+                                 @Field("currency_code") String currency_code,
+                                 @Field("callback") String server_id);
 
     @GET("order/status")
     Single<JsonElement> getOrderStatus(@Query("id") String id);
@@ -55,7 +55,7 @@ public interface IServerApi {
      * Отменить заявку
      */
     @POST("order/stop")
-    Single<JsonElement> stopOrder(@Query("id") String id);
+    Single<JsonElement> setOrderStop(@Query("id") String id);
 
 
     /**
@@ -68,7 +68,7 @@ public interface IServerApi {
      * Подтвердить что договор по заявке подписан заемщиком
      */
     @POST("contract/accept")
-    Single<JsonElement> contractAccept(@Query("id") String id);
+    Single<JsonElement> setContractAccept(@Query("id") String id);
 
 
     /**

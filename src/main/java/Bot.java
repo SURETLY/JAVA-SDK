@@ -7,7 +7,7 @@ import model.borrower.*;
 import model.contract.Contract;
 import model.order.OrderStatus;
 import model.respons.Response;
-import model.respons.ResponseCreateOrder;
+import model.respons.ResponseOrderNew;
 import network.Build;
 
 import java.util.Random;
@@ -34,25 +34,25 @@ public class Bot {
         Borrower borrower = new Borrower(name, "1", birth, "rabadash@tsar.tsar", "golub'", "000.000.0.1", "https://vignette.wikia.nocookie.net/narnia/images/e/e6/%D0%A0%D0%B0%D0%B1%D0%B0%D0%B4%D0%B0%D1%88.jpg/revision/latest?cb=20150723202518&path-prefix=ru", "asdlk", passport, registration, residential);
 
 
-        Single<ResponseCreateOrder> responseCreateOrderSingle = suretly.createOrder("59ca108acea0997574cef789", false, borrower, 10000, 0, 0, 0, "RUB", "xz")
+        Single<ResponseOrderNew> responseCreateOrderSingle = suretly.orderNew("59ca108acea0997574cef789", false, borrower, 10000, 0, 0, 0, "RUB", "xz")
                 .cache();
 
         responseCreateOrderSingle
-                .flatMap((Function<ResponseCreateOrder, SingleSource<String>>) responseCreateOrder -> {
-                    Build.log("responseCreateOrder= ", responseCreateOrder.getId());
-                    return Single.just(responseCreateOrder.getId());
+                .flatMap((Function<ResponseOrderNew, SingleSource<String>>) responseOrderNew -> {
+                    Build.log("responseOrderNew= ", responseOrderNew.getId());
+                    return Single.just(responseOrderNew.getId());
                 })
                 .flatMap((Function<String, SingleSource<Contract>>) s -> {
                     Build.log("getContract= ", s);
                     return suretly.getContract(s);
                 })
-                .flatMap((Function<Contract, Single<Pair<String, Single<Response>>>>) contract -> responseCreateOrderSingle.flatMap((Function<ResponseCreateOrder, SingleSource<Pair<String, Single<Response>>>>) responseCreateOrder -> Single.just(rollNextStep(suretly.stopOrder(responseCreateOrder.getId()), suretly.contractAccept(responseCreateOrder.getId())))))
+                .flatMap((Function<Contract, Single<Pair<String, Single<Response>>>>) contract -> responseCreateOrderSingle.flatMap((Function<ResponseOrderNew, SingleSource<Pair<String, Single<Response>>>>) responseOrderNew -> Single.just(rollNextStep(suretly.setOrderStop(responseOrderNew.getId()), suretly.setContractAccept(responseOrderNew.getId())))))
                 .flatMap((Function<Pair<String, Single<Response>>, Single<Boolean>>) stringSinglePair -> {
                     if (stringSinglePair.getKey().equals("0")) {
                         throw new RuntimeException("Stop order");
                     } else {
                         Single<Boolean> checkStatus = responseCreateOrderSingle
-                                .flatMap((Function<ResponseCreateOrder, SingleSource<OrderStatus>>) responseCreateOrder -> suretly.getOrderStatus(responseCreateOrder.getId()))
+                                .flatMap((Function<ResponseOrderNew, SingleSource<OrderStatus>>) responseOrderNew -> suretly.getOrderStatus(responseOrderNew.getId()))
                                 .map(orderStatus -> {
                                     Build.log("tag", orderStatus.toString());
                                     if (orderStatus.getStatus() == 4) {
@@ -72,9 +72,9 @@ public class Bot {
                     }
                 })
                 .flatMap((Function<Boolean, SingleSource<Response>>) aBoolean -> responseCreateOrderSingle
-                        .flatMap((Function<ResponseCreateOrder, SingleSource<Response>>) responseCreateOrder -> suretly.setOrderIssued(responseCreateOrder.getId())))
+                        .flatMap((Function<ResponseOrderNew, SingleSource<Response>>) responseOrderNew -> suretly.setOrderIssued(responseOrderNew.getId())))
                 .flatMap((Function<Response, Single<Response>>) response -> responseCreateOrderSingle
-                        .flatMap((Function<ResponseCreateOrder, Single<Response>>) responseCreateOrder -> suretly.setOrderPaid(responseCreateOrder.getId())))
+                        .flatMap((Function<ResponseOrderNew, Single<Response>>) responseOrderNew -> suretly.setOrderPaid(responseOrderNew.getId())))
                 .subscribe(response -> countDownLatch.countDown());
         try {
             countDownLatch.await();

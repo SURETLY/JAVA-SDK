@@ -2,11 +2,11 @@ package model.respons;
 
 import com.google.gson.JsonObject;
 
-public class ResponseCreateOrder {
+public class ResponseOrderNew {
 
     private String id;
 
-    public ResponseCreateOrder(String id) {
+    public ResponseOrderNew(String id) {
         this.id = id;
     }
 
@@ -14,9 +14,9 @@ public class ResponseCreateOrder {
         return id;
     }
 
-    public static ResponseCreateOrder fromJson(JsonObject jsonObject) {
+    public static ResponseOrderNew fromJson(JsonObject jsonObject) {
         String id = jsonObject.get("id").getAsString();
 
-        return new ResponseCreateOrder(id);
+        return new ResponseOrderNew(id);
     }
 }

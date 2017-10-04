@@ -1,8 +1,6 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sun.tools.javac.comp.Flow;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import model.borrower.Borrower;
 import model.contract.Contract;
@@ -10,7 +8,7 @@ import model.options.Options;
 import model.order.Order;
 import model.order.OrderStatus;
 import model.respons.Response;
-import model.respons.ResponseCreateOrder;
+import model.respons.ResponseOrderNew;
 import network.LenderClient;
 import network.SessionManager;
 
@@ -49,9 +47,9 @@ public class Suretly {
                 });
     }
 
-    public Single<ResponseCreateOrder> createOrder(String uid, boolean isPublic, Borrower borrower, int user_credit_score, float loan_sum, float loan_rate, float loan_term, String currency_code, String server_id) {
-        return lenderClient.getApi().createOrder(uid, isPublic, borrower, user_credit_score, loan_sum, loan_rate, loan_term, currency_code, server_id)
-                .map(jsonElement -> ResponseCreateOrder.fromJson(jsonElement.getAsJsonObject()));
+    public Single<ResponseOrderNew> orderNew(String uid, boolean isPublic, Borrower borrower, int user_credit_score, float loan_sum, float loan_rate, float loan_term, String currency_code, String server_id) {
+        return lenderClient.getApi().orderNew(uid, isPublic, borrower, user_credit_score, loan_sum, loan_rate, loan_term, currency_code, server_id)
+                .map(jsonElement -> ResponseOrderNew.fromJson(jsonElement.getAsJsonObject()));
     }
 
     /**
@@ -62,8 +60,8 @@ public class Suretly {
                 .map(jsonElement -> OrderStatus.fromJson(jsonElement.getAsJsonObject()));
     }
 
-    public Single<Response> stopOrder(String id) {
-        return lenderClient.getApi().stopOrder(id)
+    public Single<Response> setOrderStop(String id) {
+        return lenderClient.getApi().setOrderStop(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
@@ -74,8 +72,8 @@ public class Suretly {
                 });
     }
 
-    public Single<Response> contractAccept(String id) {
-        return lenderClient.getApi().contractAccept(id)
+    public Single<Response> setContractAccept(String id) {
+        return lenderClient.getApi().setContractAccept(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
     }
 
