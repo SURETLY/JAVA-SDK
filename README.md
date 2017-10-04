@@ -26,7 +26,7 @@ SDK for Suretly Lender API
    
 #### #2.3 Получить статус заявки
  
-        suretly.getOrderStatus(orderId).subscribe(orderStatus ->  orderStatus);
+    suretly.getOrderStatus(orderId).subscribe(orderStatus ->  orderStatus);
    
 #### #2.4 Отменить заявку
    
