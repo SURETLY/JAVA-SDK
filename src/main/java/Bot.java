@@ -1,15 +1,18 @@
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import javafx.util.Pair;
 import model.borrower.*;
 import model.contract.Contract;
+import model.order.Order;
 import model.order.OrderStatus;
 import model.respons.Response;
 import model.respons.ResponseOrderNew;
 import network.Build;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -33,10 +36,8 @@ public class Bot {
 
         Borrower borrower = new Borrower(name, "1", birth, "rabadash@tsar.tsar", "golub'", "000.000.0.1", "https://vignette.wikia.nocookie.net/narnia/images/e/e6/%D0%A0%D0%B0%D0%B1%D0%B0%D0%B4%D0%B0%D1%88.jpg/revision/latest?cb=20150723202518&path-prefix=ru", "asdlk", passport, registration, residential);
 
-
         Single<ResponseOrderNew> responseCreateOrderSingle = suretly.orderNew("59ca108acea0997574cef789", false, borrower, 10000, 0, 0, 0, "RUB", "xz")
                 .cache();
-
         responseCreateOrderSingle
                 .flatMap((Function<ResponseOrderNew, SingleSource<String>>) responseOrderNew -> {
                     Build.log("responseOrderNew= ", responseOrderNew.getId());

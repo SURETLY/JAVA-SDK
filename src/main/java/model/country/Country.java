@@ -1,51 +1,37 @@
 package model.country;
 
+import com.google.gson.JsonObject;
+
 public class Country {
 
-    private String id;
-    private String code;
     private String name;
+    private String code;
     private String currency_code;
 
 
-    public Country(String id, String code, String name, String currency_code) {
-        this.id = id;
-        this.code = code;
+    public Country(String name, String code, String currency_code) {
         this.name = name;
-        this.currency_code = currency_code;
-    }
-
-    public String getId() {
-
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
         this.code = code;
+        this.currency_code = currency_code;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getCode() {
+        return code;
     }
 
     public String getCurrency_code() {
         return currency_code;
     }
 
-    public void setCurrency_code(String currency_code) {
-        this.currency_code = currency_code;
-    }
+    public static Country fromJson(JsonObject jsonObject) {
+        String name = jsonObject.get("name").getAsString();
+        String code = jsonObject.get("code").getAsString();
+        String currency_code = jsonObject.get("currency_code").getAsString();
 
+        return new Country(name, code, currency_code);
+    }
 }

@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import io.reactivex.Single;
 import model.borrower.Borrower;
 import model.contract.Contract;
+import model.country.Country;
+import model.currency.Currency;
 import model.options.Options;
 import model.order.Order;
 import model.order.OrderStatus;
@@ -95,5 +97,31 @@ public class Suretly {
     public Single<Response> setOrderUnPaid(String id) {
         return lenderClient.getApi().setOrderUnPaid(id)
                 .map(jsonElement -> Response.fromJson(jsonElement.getAsJsonObject()));
+    }
+
+    public Single<List<Country>> getCountries() {
+        return lenderClient.getApi().getCountries()
+                .map(jsonElement -> {
+                    List<Country> countries = new ArrayList<>();
+                    JsonArray jsonArray = jsonElement.getAsJsonArray();
+                    for (JsonElement element : jsonArray) {
+                        JsonObject obData = element.getAsJsonObject();
+                        countries.add(Country.fromJson(obData));
+                    }
+                    return countries;
+                });
+    }
+
+    public Single<List<Currency>> getCurrencies() {
+        return lenderClient.getApi().getCountries()
+                .map(jsonElement -> {
+                    List<Currency> currencies = new ArrayList<>();
+                    JsonArray jsonArray = jsonElement.getAsJsonArray();
+                    for (JsonElement element : jsonArray) {
+                        JsonObject obData = element.getAsJsonObject();
+                        currencies.add(Currency.fromJson(obData));
+                    }
+                    return currencies;
+                });
     }
 }

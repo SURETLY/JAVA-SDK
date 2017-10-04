@@ -96,9 +96,9 @@ public interface IServerApi {
     @POST("order/unpaid")
     Single<JsonElement> setOrderUnPaid(@Field("id") String id);
 
-    @GET("currencies")
+    @GET("currency")
     Single<JsonElement> getCurrencies();
 
-    @GET("countries")
+    @GET("country")
     Single<JsonElement> getCountries();
 }
